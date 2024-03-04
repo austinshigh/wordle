@@ -6,61 +6,73 @@
     <style type="text/css">
 		.grid{display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;}
 		.square {text-align: center; width: 70px; height: 70px; margin: 5px; border: 1px; border-color: black; border-style: solid; font-size: 60px;}
-        .square:hover{background-color: rgb(0, 132, 255);}
         .turn{border: 1px; border-color: black; border-style: solid; width: 100px;}
         .winner{border: 1px; border-color: green; border-style: solid; width: 100px;}
         .keyboard{display: flex; flex-direction: column; align-items: center;}
         .row{display: flex; flex-direction: row;}
         .key{text-align: center; width: 35px; height: 35px; margin: 5px; border: 1px; border-color: rgb(0, 132, 255); border-style: solid; font-size: 28px; border-radius: 5px;}
         .key:hover{background-color: rgb(0, 132, 255);}
-        .enterKey{text-align: center; height: 20px; margin: 5px; border: 1px; border-color: rgb(0, 132, 255); border-style: solid; font-size: 20px; border-radius: 5px; width: 80px;}
-        .backspace{text-align: center; height: 20px; margin: 5px; border: 1px; border-color: rgb(0, 132, 255); border-style: solid; font-size: 20px; border-radius: 5px; width: 80px;}
+        .wideKey{text-align: center; height: 25px; margin: 5px; border: 1px; border-color: rgb(0, 132, 255); border-style: solid; font-size: 20px; border-radius: 5px; width: 80px;}
+        .wideKey:hover{background-color: rgb(0, 132, 255);}
         .disable{pointer-events: none; background-color: grey;}
         .correct{background-color: lightgreen;}
         .close{background-color: rgb(238, 190, 20);}
         .gridContainer{display: flex; justify-content: center;}
+        .container{display: flex; flex-direction: column; align-items: center;;}
         .keyboard{margin-top: 30px;}
+        #newGame{width: 100px;}
+        #debugMode{width: 100px;}
+        .active{background-color: rgb(0, 132, 255); color: white;}
+        #correctAnswerContainer{color: green; display: none;}
+        .show{display:block !important;}
 	</style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
-    <div class="gridContainer">
-    </div>
-    <div class="keyboard">
+    <div class="container">
+        <div id="correctAnswerContainer"></div>
         <div class="row">
-            <div class="key" id="q">Q</div>
-            <div class="key" id="w">W</div>
-            <div class="key" id="e">E</div>
-            <div class="key" id="r">R</div>
-            <div class="key" id="t">T</div>
-            <div class="key" id="y">Y</div>
-            <div class="key" id="u">U</div>
-            <div class="key" id="i">I</div>
-            <div class="key" id="o">O</div>
-            <div class="key" id="p">P</div>
+            <div class="wideKey" id="newGame">New Game</div>
+            <div class="wideKey" id="debugMode">Debug</div>
         </div>
-        <div class="row">
-            <div class="key" id="a">A</div>
-            <div class="key" id="s">S</div>
-            <div class="key" id="d">D</div>
-            <div class="key" id="g">G</div>
-            <div class="key" id="h">H</div>
-            <div class="key" id="j">J</div>
-            <div class="key" id="k">K</div>
-            <div class="key" id="l">L</div>
+        <div class="gridContainer">
         </div>
-        <div class="row">
-            <div class="key" id="z">Z</div>
-            <div class="key" id="x">X</div>
-            <div class="key" id="c">C</div>
-            <div class="key" id="v">V</div>
-            <div class="key" id="b">B</div>
-            <div class="key" id="n">N</div>
-            <div class="key" id="m">M</div>
-        </div>
-        <div class="row">
-            <div class="enterKey">Enter</div>
-            <div class="backspace">Delete</div>
+        <div class="keyboard">
+            <div class="row">
+                <div class="key" id="q">Q</div>
+                <div class="key" id="w">W</div>
+                <div class="key" id="e">E</div>
+                <div class="key" id="r">R</div>
+                <div class="key" id="t">T</div>
+                <div class="key" id="y">Y</div>
+                <div class="key" id="u">U</div>
+                <div class="key" id="i">I</div>
+                <div class="key" id="o">O</div>
+                <div class="key" id="p">P</div>
+            </div>
+            <div class="row">
+                <div class="key" id="a">A</div>
+                <div class="key" id="s">S</div>
+                <div class="key" id="d">D</div>
+                <div class="key" id="g">G</div>
+                <div class="key" id="h">H</div>
+                <div class="key" id="j">J</div>
+                <div class="key" id="k">K</div>
+                <div class="key" id="l">L</div>
+            </div>
+            <div class="row">
+                <div class="key" id="z">Z</div>
+                <div class="key" id="x">X</div>
+                <div class="key" id="c">C</div>
+                <div class="key" id="v">V</div>
+                <div class="key" id="b">B</div>
+                <div class="key" id="n">N</div>
+                <div class="key" id="m">M</div>
+            </div>
+            <div class="row">
+                <div id="enterKey" class="wideKey">Enter</div>
+                <div id="backspace" class="wideKey">Delete</div>
+            </div>
         </div>
     </div>
 </body>
@@ -73,11 +85,14 @@
         let currentCol = 0;
         let guess = [];
 
+        const correctAnswerContainer = $("#correctAnswerContainer");
+        const backspaceKey = $("#backspace");
+        const enterKey = $("#enterKey");
+        const restartGameKey = $("#newGame");
+        const debugKey = $("#debugMode");
+
         let lettersGuessed = [];
         let answer = await generateNewWord();
-
-        const backspaceKey = $(".backspace");
-        const enterKey = $(".enterKey");
 
         const gridContainer = $('.gridContainer');
         let gridHTML = "<div class='grid'>";
@@ -107,6 +122,16 @@
             $(backspaceKey).on("click", (e) =>{
                 backspace();
             })
+
+            $(restartGameKey).on("click", () => {
+                clearBoard();
+                answer = generateNewWord();
+            })
+
+            $(debugKey).on("click", () => {
+                $(correctAnswerContainer).toggleClass("show");
+                $(debugKey).toggleClass("active");
+            })
         };
 
         function updateGuess(letter, key){
@@ -117,6 +142,22 @@
                 $(square).text(letter);
                 currentCol += 1;
             }
+        }
+
+        function clearBoard(){
+            guess = [];
+            lettersGuessed = [];
+            currentCol = 0;
+            currentRow = 0;
+            let squares = $('.square');
+            $(squares).each((index, square) => {
+                $(square).text("");
+                $(square).removeClass("correct");
+                $(square).removeClass("close");
+            })
+            $('.key').each((index, key) => {
+                $(key).removeClass("disable");
+            })
         }
 
         function backspace(){
@@ -174,6 +215,7 @@
             let validDefinition = await checkWordDefinition(word);
             if (validDefinition){
                 console.log(word.split(""));
+                $(correctAnswerContainer).text(word);
                 return word.split("");
             }else{
                 console.log('trigger-re-run');
