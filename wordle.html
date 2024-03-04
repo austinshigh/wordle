@@ -25,6 +25,11 @@
         .active{background-color: rgb(0, 132, 255); color: white;}
         #correctAnswerContainer{color: green; display: none;}
         .show{display:block !important;}
+        @media screen and (max-width: 600px) {
+            .key {
+                background-color: red;
+            }
+}
 	</style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
@@ -157,6 +162,7 @@
             })
             $('.key').each((index, key) => {
                 $(key).removeClass("disable");
+                $(key).removeClass("correct");
             })
         }
 
