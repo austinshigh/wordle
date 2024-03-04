@@ -4,24 +4,28 @@
 <head>
     <title>Tic Tac Toe Assignment Part 1</title>
     <style type="text/css">
-		.grid{display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr; width: 315px;}
-		.square {text-align: center; width: 100px; height: 100px; margin: 5px; border: 1px; border-color: black; border-style: solid; font-size: 85px;}
+		.grid{display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;}
+		.square {text-align: center; width: 70px; height: 70px; margin: 5px; border: 1px; border-color: black; border-style: solid; font-size: 60px;}
         .square:hover{background-color: rgb(0, 132, 255);}
         .turn{border: 1px; border-color: black; border-style: solid; width: 100px;}
         .winner{border: 1px; border-color: green; border-style: solid; width: 100px;}
         .keyboard{display: flex; flex-direction: column; align-items: center;}
         .row{display: flex; flex-direction: row;}
-        .key{text-align: center; width: 20px; height: 20px; margin: 5px; border: 1px; border-color: rgb(0, 132, 255); border-style: solid; font-size: 20px; border-radius: 5px;}
+        .key{text-align: center; width: 35px; height: 35px; margin: 5px; border: 1px; border-color: rgb(0, 132, 255); border-style: solid; font-size: 28px; border-radius: 5px;}
         .key:hover{background-color: rgb(0, 132, 255);}
         .enterKey{text-align: center; height: 20px; margin: 5px; border: 1px; border-color: rgb(0, 132, 255); border-style: solid; font-size: 20px; border-radius: 5px; width: 80px;}
-        .clearKey{text-align: center; height: 20px; margin: 5px; border: 1px; border-color: rgb(0, 132, 255); border-style: solid; font-size: 20px; border-radius: 5px; width: 80px;}
+        .backspace{text-align: center; height: 20px; margin: 5px; border: 1px; border-color: rgb(0, 132, 255); border-style: solid; font-size: 20px; border-radius: 5px; width: 80px;}
         .disable{pointer-events: none; background-color: grey;}
         .correct{background-color: lightgreen;}
         .close{background-color: rgb(238, 190, 20);}
+        .gridContainer{display: flex; justify-content: center;}
+        .keyboard{margin-top: 30px;}
 	</style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
+    <div class="gridContainer">
+    </div>
     <div class="keyboard">
         <div class="row">
             <div class="key" id="q">Q</div>
@@ -55,106 +59,161 @@
             <div class="key" id="m">M</div>
         </div>
         <div class="row">
-            <div class="clearKey">Clear</div>
             <div class="enterKey">Enter</div>
+            <div class="backspace">Delete</div>
         </div>
     </div>
 </body>
 <script>
-    const NUM_SQUARES = 5;
-    const NUM_ROWS = 5;
-    let currentRow = 0;
-    let currentCol = 0;
-    let guess = [];
+    window.addEventListener('DOMContentLoaded', function() {
+    (async function($) {
+        const NUM_SQUARES = 5;
+        const NUM_ROWS = 6;
+        let currentRow = 0;
+        let currentCol = 0;
+        let guess = [];
 
-    let lettersGuessed = [];
-    const word=['c', 'h', 'u', 'c', 'k'];
+        let lettersGuessed = [];
+        let answer = await generateNewWord();
 
-    const clear = $(".clearKey");
-    const enter = $(".enterKey");
-    document.write( "<div class='grid'>");
-    for (i=0; i<NUM_ROWS; i++){
-        for (j=0; j<NUM_SQUARES; j++)
-        {
-            document.write( `<div class= "square row${i} col${j}"></div>`);
+        const backspaceKey = $(".backspace");
+        const enterKey = $(".enterKey");
+
+        const gridContainer = $('.gridContainer');
+        let gridHTML = "<div class='grid'>";
+        for (i=0; i<NUM_ROWS; i++){
+            for (j=0; j<NUM_SQUARES; j++)
+            {
+                gridHTML += `<div class= "square row${i} col${j}"></div>`;
+            }
         }
-    }
-    document.write( "</div>");
+        gridHTML += "</div>";
 
-    function addKeyListeners(){
-        $('.key').each((index, key)=>{
-            $(key).on("click", (e) => {
-                letter = $(key).text();
-                updateGuess(letter, key);
-                console.log(letter);
-            });
-        })
+        $(gridContainer).html(gridHTML);
 
-        $(enter).on("click", (e) =>{
-            checkAnswer();
-        })
-         
+        function addKeyListeners(){
+            $('.key').each((index, key)=>{
+                $(key).on("click", (e) => {
+                    letter = $(key).text();
+                    updateGuess(letter, key);
+                });
+            })
 
-        $(clear).on("click", (e) =>{
-            clearLine();
-        })
-    };
+            $(enterKey).on("click", (e) =>{
+                checkAnswer();
+            })
+            
 
-    function updateGuess(letter, key){
-        if (currentCol < 5){
-            guess.push(letter.toLowerCase());
-            lettersGuessed.push(key);
-            let square = $(`.row${currentRow}.col${currentCol}`);
-            $(square).text(letter);
-            currentCol += 1;
+            $(backspaceKey).on("click", (e) =>{
+                backspace();
+            })
+        };
+
+        function updateGuess(letter, key){
+            if (currentCol < 5){
+                guess.push(letter.toLowerCase());
+                lettersGuessed.push(key);
+                let square = $(`.row${currentRow}.col${currentCol}`);
+                $(square).text(letter);
+                currentCol += 1;
+            }
         }
-    }
 
-    function clearLine(){
-        currentCol = 0;
-        guess = [];
-        let row = $(`.row${currentRow}`);
-        row.each((index, square)=>{
+        function backspace(){
+            guess.pop();
+            lettersGuessed.pop();
+            let square = $(`.row${currentRow}.col${currentCol - 1}`);
             $(square).text("");
-        });
-    }
+            if (currentCol > 0){
+                currentCol -= 1;
+            }
+        }
 
-    function checkAnswer(){
-        if (currentCol === 5){
-            console.log(word);
-            console.log(guess);
-            let correctLetters = 0;
-            let row = $(`.row${currentRow}`);
-            for(i = 0; i < 5; i++){
-                if (word[i] === guess[i]){
-                    $(row[i]).addClass("correct");
-                    correctLetters += 1;
-                }else if(word.includes(guess[i])){
-                    $(row[i]).addClass("close");
+        async function checkAnswer(){
+            if (currentCol === 5){
+                let validGuess = await checkWordDefinition(guess.join(""));
+                if (!validGuess){
+                    alert("Word not found in word list");
                 }else{
-                    $(`#${guess[i]}`).addClass("disable");
+                    console.log(answer);
+                    console.log(guess);
+                    let correctLetters = 0;
+                    let row = $(`.row${currentRow}`);
+                    for(i = 0; i < 5; i++){
+                        if (answer[i] === guess[i]){
+                            $(row[i]).addClass("correct");
+                            $(`#${guess[i]}`).addClass("correct");
+                            correctLetters += 1;
+                        }else if(answer.includes(guess[i])){
+                            $(row[i]).addClass("close");
+                        }else{
+                            $(`#${guess[i]}`).addClass("disable");
+                        }
+                    }
+                    if(correctLetters === 5){
+                        console.log("you win!");
+                    }  
+                    currentCol = 0;
+                    currentRow += 1;    
+                    guess = [];
                 }
             }
-            if(correctLetters === 5){
-                console.log("you win!");
-            }  
-            currentCol = 0;
-            currentRow += 1;    
-            guess = [];
         }
-    }
 
-    addKeyListeners();
-    
-    // const selectionBox = document.getElementById("selected");
+        async function generateNewWord(){
+            console.log("generate new word");
+            let word = await fetch('https://random-word-api.herokuapp.com/word?length=5')
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                return data[0]            
+            }).catch((error) => {
+                throw new Error("Error: Random-Word-API Error")
+            })
+            let validDefinition = await checkWordDefinition(word);
+            if (validDefinition){
+                console.log(word.split(""));
+                return word.split("");
+            }else{
+                console.log('trigger-re-run');
+                generateNewWord();
+            }
+        }
 
-    // for (let i = 0; i < NUM_SQUARES; i++) {
-    //     let square = document.getElementById(`sq${i}`);
-    //     square.addEventListener('click', () =>{
-    //         selectionBox.innerHTML = `${i}`;
-    //         square.innerHTML = "X";
-    //     });
-    // }
+        async function checkWordDefinition(word){
+            let result = await fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + word)
+            .then((response) => {
+                return response.json();
+            }).then((data) => {
+                if (data.title === "No Definitions Found"){
+                    return false;
+                }else{
+                    return true;
+                }
+            }).catch((error) => {
+                if (error.status === 404){
+                    return false;
+                }else{
+                    throw new Error("Error: Dictionary API");
+                }
+            })
+            return result;
+        }
+
+        addKeyListeners();
+        
+        // const selectionBox = document.getElementById("selected");
+
+        // for (let i = 0; i < NUM_SQUARES; i++) {
+        //     let square = document.getElementById(`sq${i}`);
+        //     square.addEventListener('click', () =>{
+        //         selectionBox.innerHTML = `${i}`;
+        //         square.innerHTML = "X";
+        //     });
+        // }
+    })(jQuery);
+    });
 
 </script>
 </html>
