@@ -25,11 +25,6 @@
         .active{background-color: rgb(0, 132, 255); color: white;}
         #correctAnswerContainer{color: green; display: none;}
         .show{display:block !important;}
-        @media screen and (max-width: 600px) {
-            .key {
-                background-color: red;
-            }
-}
 	</style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
@@ -89,12 +84,18 @@
         let currentRow = 0;
         let currentCol = 0;
         let guess = [];
+        // guess count / win-loss stats
+        // let guessCount;
+        // let wins;
+        // let losses;
 
         const correctAnswerContainer = $("#correctAnswerContainer");
         const backspaceKey = $("#backspace");
         const enterKey = $("#enterKey");
         const restartGameKey = $("#newGame");
         const debugKey = $("#debugMode");
+
+        let letterCount = [];
 
         let lettersGuessed = [];
         let answer = await generateNewWord();
@@ -176,8 +177,21 @@
             }
         }
 
+        function countLetters(word){
+            letterCount = [];
+            word.forEach((letter) => {
+                if (letterCount[letter] === 1){
+                    letterCount[letter] = letterCount[letter] + 1;
+                }else{
+                    letterCount[letter] = 1;
+                }
+            })
+            console.log(letterCount);
+        }
+
         async function checkAnswer(){
             if (currentCol === 5){
+                // TODO count misplaced letters
                 let validGuess = await checkWordDefinition(guess.join(""));
                 if (!validGuess){
                     alert("Word not found in word list");
@@ -187,12 +201,16 @@
                     let correctLetters = 0;
                     let row = $(`.row${currentRow}`);
                     for(i = 0; i < 5; i++){
+                        console.log(answer);
                         if (answer[i] === guess[i]){
                             $(row[i]).addClass("correct");
                             $(`#${guess[i]}`).addClass("correct");
                             correctLetters += 1;
                         }else if(answer.includes(guess[i])){
-                            $(row[i]).addClass("close");
+                            if (letterCount[guess[i]] > 0){
+                                $(row[i]).addClass("close");
+                                letterCount[guess[i]] -= 1;
+                            }
                         }else{
                             $(`#${guess[i]}`).addClass("disable");
                         }
@@ -222,6 +240,7 @@
             if (validDefinition){
                 console.log(word.split(""));
                 $(correctAnswerContainer).text(word);
+                countLetters(word.split(""));
                 return word.split("");
             }else{
                 console.log('trigger-re-run');
@@ -250,16 +269,7 @@
         }
 
         addKeyListeners();
-        
-        // const selectionBox = document.getElementById("selected");
 
-        // for (let i = 0; i < NUM_SQUARES; i++) {
-        //     let square = document.getElementById(`sq${i}`);
-        //     square.addEventListener('click', () =>{
-        //         selectionBox.innerHTML = `${i}`;
-        //         square.innerHTML = "X";
-        //     });
-        // }
     })(jQuery);
     });
 
