@@ -193,7 +193,7 @@ to the final answer. This was rewarding for me because I initially did not know 
         let currentRow = 0;
         let currentCol = 0;
         let guess = [];
-        // TODO guess count / win-loss stats
+
         let guessCount = 0;
         let wins = 0;
         let losses = 0;
@@ -209,6 +209,7 @@ to the final answer. This was rewarding for me because I initially did not know 
         const debugKey = $("#debugMode");
 
         let letterCount = [];
+        let letterCountTemp = [];
 
         let lettersGuessed = [];
         let answer;
@@ -329,11 +330,14 @@ to the final answer. This was rewarding for me because I initially did not know 
 
         function countLetters(word){
             letterCount = [];
+            letterCountTemp = [];
             word.forEach((letter) => {
                 if (letterCount[letter] > 0){
                     letterCount[letter] = letterCount[letter] + 1;
+                    letterCountTemp[letter] = letterCountTemp[letter] + 1;
                 }else{
                     letterCount[letter] = 1;
+                    letterCountTemp[letter] = 1;
                 }
             })
         }
@@ -375,6 +379,7 @@ to the final answer. This was rewarding for me because I initially did not know 
                     currentRow += 1;    
                     guess = [];
                 }
+                letterCount = letterCountTemp;
             }
         }
 
