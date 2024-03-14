@@ -55,35 +55,6 @@ to the final answer. This was rewarding for me because I initially did not know 
 		.statContainer{display: flex; gap: 10px; margin: 15px 0px;}
         .whiteText{color: white;}
         @media (max-width: 700px){
-            /* .square{
-                width: 50px;
-                height: 70px;
-                line-height: 70px;
-                font-size: 60px;
-			}
-            .key{
-                width: 65px;
-                height: 75px;
-                font-size: 60px;
-                line-height: 75px;
-            }
-            .wideKey{
-                height: 75px;
-                line-height: 75px;
-                font-size: 30px;
-                width: 110px;
-            }
-            .wideKey#newGame{
-                width: 150px;
-            }
-            .statContainer{
-                font-size: 30px;
-            }
-            .correctAnswerContainer{
-                font-size: 30px;
-            } */
-        }
-        @media (max-width: 600px){
             h1{
                 font-size: 25px;
                 margin-top: 0;
@@ -371,7 +342,7 @@ to the final answer. This was rewarding for me because I initially did not know 
                         displayWinningAnimation();
 						$(winDiv).text(wins);
                     }else if (currentRow === 5){
-						alert("you lose :(");
+                        alert(`you lose :( the correct answer was ${$(correctAnswerContainer).text()}`);
 						losses += 1;
 						$(lossDiv).text(losses);
 					}
