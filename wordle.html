@@ -381,6 +381,7 @@ to the final answer. This was rewarding for me because I initially did not know 
         function displayWinningAnimation(){
             $(".square").each((index, square) => {
                 $(square).removeClass("correct");
+                $(square).removeClass("close");
                 $(square).addClass("gameWon");
             })
             $('.square.row2.col1').addClass("whiteText").text("Y");
