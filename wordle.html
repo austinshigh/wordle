@@ -1,80 +1,126 @@
-<!-- https://austinshigh.github.io/ttt2/ttt3.html -->
+<!-- https://austinshigh.github.io/wordle/wordle.html -->
 
+<!-- What was the most satisfying part of this assignemnt:
+In testing the NYT Wordle game, I realized that I would need to handle the following use case.
+Say that a word has 1 letter 'e', if the user enters a guess with 3 letter 'e's (all in the incorrect location), 
+it should be signified that the correct answer only has a single 'e'. I was able to acheive this by keeping
+a count of each letter in the word using an associative array. I then decrement the count as I compare the user's guess
+to the final answer. This was rewarding for me because I initially did not know how I would solve for this use case.-->
+<!-- Figure out responsive -->
+<!-- down to 700px, down to 600px -->
 <!DOCTYPE html>
 <head>
-    <title>Tic Tac Toe Assignment Part 1</title>
+    <title>Wordle</title>
     <style type="text/css">
 		.grid{display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;}
-		.square {text-align: center; width: 70px; height: 70px; margin: 5px; border: 1px; border-color: black; border-style: solid; font-size: 60px;}
+		.square 
+        {text-align: center; width: 40px; height: 40px; margin: 5px; border: 1px; border-color: rgb(0, 0, 0); border-style: solid; font-size: 30px;}
+        .gameWon{
+            animation-name: example;
+            animation-duration: 4s;
+            background-color: black;
+        }
+        @keyframes example {
+        from {background-color: white;}
+        to {background-color: black;}
+        }
         .turn{border: 1px; border-color: black; border-style: solid; width: 100px;}
         .winner{border: 1px; border-color: green; border-style: solid; width: 100px;}
         .keyboard{display: flex; flex-direction: column; align-items: center;}
         .row{display: flex; flex-direction: row;}
-        .key{text-align: center; width: 35px; height: 35px; margin: 5px; border: 1px; border-color: rgb(0, 132, 255); border-style: solid; font-size: 28px; border-radius: 5px;}
+        .key{text-align: center; width: 35px; height: 35px; margin: 5px; border: 1px; border-color: rgb(0, 132, 255); border-style: solid; font-size: 28px; border-radius: 5px; box-shadow: 1px 1px 1px #333333;}
         .key:hover{background-color: rgb(0, 132, 255);}
+		.key:active{background-color: rgb(0, 54, 104); color: white;}
         .wideKey{text-align: center; height: 25px; margin: 5px; border: 1px; border-color: rgb(0, 132, 255); border-style: solid; font-size: 20px; border-radius: 5px; width: 80px;}
         .wideKey:hover{background-color: rgb(0, 132, 255);}
+		.wideKey:active{background-color: rgb(0, 54, 104); color: white;}
         .disable{pointer-events: none; background-color: grey;}
         .correct{background-color: lightgreen;}
         .close{background-color: rgb(238, 190, 20);}
         .gridContainer{display: flex; justify-content: center;}
-        .container{display: flex; flex-direction: column; align-items: center;;}
         .keyboard{margin-top: 30px;}
         #newGame{width: 100px;}
         #debugMode{width: 100px;}
         .active{background-color: rgb(0, 132, 255); color: white;}
         #correctAnswerContainer{color: green; display: none;}
         .show{display:block !important;}
+		.statContainer{display: flex; gap: 10px; margin: 15px 0px;}
+		.backgroundContainer{background-color: #333333; padding: 20px;}
+		.innerContainer{display: flex; flex-direction: column; align-items: center; padding: 30px; max-width: 500px;}
+		.outterContainer{background-color: white; display:flex; justify-content: center; width: 100%; border-radius: 50px;}
+        .whiteText{color: white;}
+        @media (max-width: 500px){
+            .square{
+                border: red;
+                width: 30px;
+				max-width: 30px;
+				max-height: 30px;
+			}
+        }
 	</style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div id="correctAnswerContainer"></div>
-        <div class="row">
-            <div class="wideKey" id="newGame">New Game</div>
-            <div class="wideKey" id="debugMode">Debug</div>
-        </div>
-        <div class="gridContainer">
-        </div>
-        <div class="keyboard">
-            <div class="row">
-                <div class="key" id="q">Q</div>
-                <div class="key" id="w">W</div>
-                <div class="key" id="e">E</div>
-                <div class="key" id="r">R</div>
-                <div class="key" id="t">T</div>
-                <div class="key" id="y">Y</div>
-                <div class="key" id="u">U</div>
-                <div class="key" id="i">I</div>
-                <div class="key" id="o">O</div>
-                <div class="key" id="p">P</div>
-            </div>
-            <div class="row">
-                <div class="key" id="a">A</div>
-                <div class="key" id="s">S</div>
-                <div class="key" id="d">D</div>
-                <div class="key" id="g">G</div>
-                <div class="key" id="h">H</div>
-                <div class="key" id="j">J</div>
-                <div class="key" id="k">K</div>
-                <div class="key" id="l">L</div>
-            </div>
-            <div class="row">
-                <div class="key" id="z">Z</div>
-                <div class="key" id="x">X</div>
-                <div class="key" id="c">C</div>
-                <div class="key" id="v">V</div>
-                <div class="key" id="b">B</div>
-                <div class="key" id="n">N</div>
-                <div class="key" id="m">M</div>
-            </div>
-            <div class="row">
-                <div id="enterKey" class="wideKey">Enter</div>
-                <div id="backspace" class="wideKey">Delete</div>
-            </div>
-        </div>
-    </div>
+	<div class="backgroundContainer">
+		<div class="outterContainer">
+			<div class="innerContainer">
+				<h1>Wordle</h1>
+				<div id="correctAnswerContainer"></div>
+				<div class="row">
+					<div class="wideKey" id="newGame" tabIndex=0>New Game</div>
+					<div class="wideKey" id="debugMode" tabIndex=0>Debug</div>
+				</div>
+				<div class="statContainer">
+					<div id="winCaption">Wins:</div>
+					<div id="wins">0</div>
+					<div id="lossCaption">Losses:</div>
+					<div id="losses">0</div>
+					<div id="guessesCaption">Total Guesses:</div>
+					<div id="guesses">0</div>
+				</div>
+				<div class="gridContainer">
+				</div>
+				<div class="keyboard">
+					<div class="row">
+						<div class="key" id="q" tabIndex=0>Q</div>
+						<div class="key" id="w" tabIndex=0>W</div>
+						<div class="key" id="e" tabIndex=0>E</div>
+						<div class="key" id="r" tabIndex=0>R</div>
+						<div class="key" id="t" tabIndex=0>T</div>
+						<div class="key" id="y" tabIndex=0>Y</div>
+						<div class="key" id="u" tabIndex=0>U</div>
+						<div class="key" id="i" tabIndex=0>I</div>
+						<div class="key" id="o" tabIndex=0>O</div>
+						<div class="key" id="p" tabIndex=0>P</div>
+					</div>
+					<div class="row">
+						<div class="key" id="a" tabIndex=0>A</div>
+						<div class="key" id="s" tabIndex=0>S</div>
+						<div class="key" id="d" tabIndex=0>D</div>
+                        <div class="key" id="f" tabIndex=0>F</div>
+						<div class="key" id="g" tabIndex=0>G</div>
+						<div class="key" id="h" tabIndex=0>H</div>
+						<div class="key" id="j" tabIndex=0>J</div>
+						<div class="key" id="k" tabIndex=0>K</div>
+						<div class="key" id="l" tabIndex=0>L</div>
+					</div>
+					<div class="row">
+						<div class="key" id="z" tabIndex=0>Z</div>
+						<div class="key" id="x" tabIndex=0>X</div>
+						<div class="key" id="c" tabIndex=0>C</div>
+						<div class="key" id="v" tabIndex=0>V</div>
+						<div class="key" id="b" tabIndex=0>B</div>
+						<div class="key" id="n" tabIndex=0>N</div>
+						<div class="key" id="m" tabIndex=0>M</div>
+					</div>
+					<div class="row">
+						<div id="enterKey" class="wideKey" tabIndex=0>Enter</div>
+						<div id="backspace" class="wideKey" tabIndex=0>Delete</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 <script>
     window.addEventListener('DOMContentLoaded', function() {
@@ -84,10 +130,14 @@
         let currentRow = 0;
         let currentCol = 0;
         let guess = [];
-        // guess count / win-loss stats
-        // let guessCount;
-        // let wins;
-        // let losses;
+        // TODO guess count / win-loss stats
+        let guessCount = 0;
+        let wins = 0;
+        let losses = 0;
+
+		let winDiv = $("#wins");
+		let lossDiv = $("#losses");
+		let guessDiv = $("#guesses");
 
         const correctAnswerContainer = $("#correctAnswerContainer");
         const backspaceKey = $("#backspace");
@@ -98,7 +148,9 @@
         let letterCount = [];
 
         let lettersGuessed = [];
-        let answer = await generateNewWord();
+        let answer;
+		
+		generateNewWord();
 
         const gridContainer = $('.gridContainer');
         let gridHTML = "<div class='grid'>";
@@ -112,32 +164,65 @@
 
         $(gridContainer).html(gridHTML);
 
-        function addKeyListeners(){
+        async function addKeyListeners(){
             $('.key').each((index, key)=>{
                 $(key).on("click", (e) => {
                     letter = $(key).text();
                     updateGuess(letter, key);
                 });
+
+				$(key).on('keypress',function(e) {
+					if(e.which == 13) {
+						letter = $(key).text();
+						updateGuess(letter, key);
+					}
+				});
             })
 
             $(enterKey).on("click", (e) =>{
                 checkAnswer();
             })
+
+			$(enterKey).on('keypress',function(e) {
+				if(e.which == 13) {
+					checkAnswer();
+				}
+			});
             
 
             $(backspaceKey).on("click", (e) =>{
                 backspace();
             })
 
-            $(restartGameKey).on("click", () => {
+			$(backspaceKey).on('keypress',function(e) {
+				if(e.which == 13) {
+					backspace();
+				}
+			});
+
+            $(restartGameKey).on("click", async() => {
                 clearBoard();
-                answer = generateNewWord();
+                generateNewWord();
             })
+
+			$(restartGameKey).on('keypress',function(e) {
+				if(e.which == 13) {
+					clearBoard();
+					generateNewWord();
+				}
+			});
 
             $(debugKey).on("click", () => {
                 $(correctAnswerContainer).toggleClass("show");
                 $(debugKey).toggleClass("active");
             })
+
+			$(debugKey).on('keypress',function(e) {
+				if(e.which == 13) {
+					$(correctAnswerContainer).toggleClass("show");
+                	$(debugKey).toggleClass("active");
+				}
+			});
         };
 
         function updateGuess(letter, key){
@@ -160,6 +245,8 @@
                 $(square).text("");
                 $(square).removeClass("correct");
                 $(square).removeClass("close");
+                $(square).removeClass("whiteText");
+                $(square).removeClass("gameWon");
             })
             $('.key').each((index, key) => {
                 $(key).removeClass("disable");
@@ -180,28 +267,25 @@
         function countLetters(word){
             letterCount = [];
             word.forEach((letter) => {
-                if (letterCount[letter] === 1){
+                if (letterCount[letter] > 0){
                     letterCount[letter] = letterCount[letter] + 1;
                 }else{
                     letterCount[letter] = 1;
                 }
             })
-            console.log(letterCount);
         }
 
         async function checkAnswer(){
             if (currentCol === 5){
-                // TODO count misplaced letters
                 let validGuess = await checkWordDefinition(guess.join(""));
                 if (!validGuess){
                     alert("Word not found in word list");
                 }else{
-                    console.log(answer);
-                    console.log(guess);
+					guessCount += 1;
+					$(guessDiv).text(guessCount);
                     let correctLetters = 0;
                     let row = $(`.row${currentRow}`);
                     for(i = 0; i < 5; i++){
-                        console.log(answer);
                         if (answer[i] === guess[i]){
                             $(row[i]).addClass("correct");
                             $(`#${guess[i]}`).addClass("correct");
@@ -216,8 +300,14 @@
                         }
                     }
                     if(correctLetters === 5){
-                        console.log("you win!");
-                    }  
+						wins += 1;
+                        displayWinningAnimation();
+						$(winDiv).text(wins);
+                    }else if (currentRow === 5){
+						alert("you lose :(");
+						losses += 1;
+						$(lossDiv).text(losses);
+					}
                     currentCol = 0;
                     currentRow += 1;    
                     guess = [];
@@ -225,8 +315,21 @@
             }
         }
 
+        function displayWinningAnimation(){
+            $(".square").each((index, square) => {
+                $(square).removeClass("correct");
+                $(square).addClass("gameWon");
+            })
+            $('.square.row2.col1').addClass("whiteText").text("Y");
+            $('.square.row2.col2').addClass("whiteText").text("O");
+            $('.square.row2.col3').addClass("whiteText").text("U");
+
+            $('.square.row3.col1').addClass("whiteText").text("W");
+            $('.square.row3.col2').addClass("whiteText").text("I");
+            $('.square.row3.col3').addClass("whiteText").text("N");
+        }
+
         async function generateNewWord(){
-            console.log("generate new word");
             let word = await fetch('https://random-word-api.herokuapp.com/word?length=5')
             .then((response) => {
                 return response.json();
@@ -238,12 +341,10 @@
             })
             let validDefinition = await checkWordDefinition(word);
             if (validDefinition){
-                console.log(word.split(""));
                 $(correctAnswerContainer).text(word);
                 countLetters(word.split(""));
-                return word.split("");
+                answer = word.split("");
             }else{
-                console.log('trigger-re-run');
                 generateNewWord();
             }
         }
