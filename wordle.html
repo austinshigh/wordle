@@ -1,4 +1,18 @@
+<!-- URL -->
 <!-- https://austinshigh.github.io/wordle/wordle.html -->
+
+<!-- APIs used -->
+<!-- Random Word API. Random Word API, 03/13/2024, https://random-word-api.herokuapp.com. -->
+<!-- Dictionary API. Dictionary API, 03/13/2024, https://dictionaryapi.dev. -->
+
+<!-- I was unable to find a free API that would both return words of specific
+    char lengths, and also check definitions of words. So I chose to use two APIs. I found that some words in the random
+    word generator API's database were not included in the free dictionary API's db. 
+        The free Random word generator API generates initial words. These words are checked against the dictioary API. If the word
+    does not exist in the dictionary, a new word is generated. I found that this typically does not happen, and when it does, it 
+    only requires one extra request of the word generator API.
+        When a user guesses a word, it is checked agains the dictionary API. Invalid words are not valid guesses.-->
+
 
 <!-- What was the most satisfying part of this assignemnt:
 In testing the NYT Wordle game, I realized that I would need to handle the following use case.
